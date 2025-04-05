@@ -2,7 +2,7 @@
 layout: post
 title:  "En estos días, parece que no puedes mover un dedo sin topar con el término 'inteligencia artificial'. En todas partes, desde los coches autónomos hasta el Amazon Echo que te ayuda a hacer la cena, parece que la IA está en todas partes. Pero, ¿qué tal si profundizamos un poco más y descubrimos algunas curiosidades increíbles sobre esta tecnología que se está apoderando del mundo? Prepárate para quedar asombrado:"
 date:   2025-04-04 12:00:00 +0000
-categories: ia curiosidades tecnologia
+categories: curiosidades
 ---
 
 En estos días, parece que no puedes mover un dedo sin topar con el término 'inteligencia artificial'. En todas partes, desde los coches autónomos hasta el Amazon Echo que te ayuda a hacer la cena, parece que la IA está en todas partes. Pero, ¿qué tal si profundizamos un poco más y descubrimos algunas curiosidades increíbles sobre esta tecnología que se está apoderando del mundo? Prepárate para quedar asombrado:
