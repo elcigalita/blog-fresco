@@ -1,0 +1,16 @@
+---
+layout: default
+---
+
+<h1>Categoría: {{ page.title }}</h1>
+
+<ul>
+  {% for post in site.posts %}
+    {% if post.categories contains page.category %}
+      <li>
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        <small>({{ post.date | date: "%d/%m/%Y" }})</small>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
