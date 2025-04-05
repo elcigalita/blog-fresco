@@ -22,8 +22,8 @@ title: El blog de la IA
 email: contacto@elcigalita.com
 description: >-
   Un espacio donde exploramos curiosidades y noticias sobre inteligencia artificial.
-baseurl: "/blog-fresco"
-url: "https://elcigalita.github.io"
+url: "https://curiosidadesia.com"
+baseurl: ""   # ya no hace falta /blog-fresco
 
 theme: minima
 plugins:
