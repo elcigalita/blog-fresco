@@ -1,0 +1,62 @@
+/* Estilo visual limpio y moderno */
+
+body {
+  background-color: #f9fafb;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+  line-height: 1.7;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #e0e7ff;
+  padding: 2em 1em;
+  text-align: center;
+}
+
+header h1 {
+  margin-bottom: 0.2em;
+  font-size: 2em;
+}
+
+header p {
+  margin-top: 0;
+  color: #4b5563;
+}
+
+nav a {
+  color: #2563eb;
+  margin: 0 0.4em;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+main {
+  max-width: 750px;
+  margin: auto;
+  background: white;
+  padding: 2em;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+}
+
+a {
+  color: #2563eb;
+  transition: 0.2s ease;
+}
+
+a:hover {
+  color: #1d4ed8;
+}
+
+footer {
+  color: #9ca3af;
+  font-size: 0.9em;
+  margin-top: 3em;
+}
