@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://elcigalita.github.io/blog-fresco/sitemap.xml
