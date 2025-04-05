@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Artículo sobre IA"
-date:   2025-04-05 12:00:00 +0000
+date:   2025-04-05 00:01:00 +0000
 categories: ia curiosidades tecnologia
 tags: [inteligencia artificial, café, tecnología futurista.]
 excerpt: ""
