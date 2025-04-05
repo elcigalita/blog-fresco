@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ page.title }} | {{ site.title }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ page.title | default: site.title }} | {{ site.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <meta name="description" content="{{ page.excerpt | strip_html | truncate: 160 | default: site.description }}">
+    <meta name="author" content="{{ site.author }}">
+    <meta name="keywords" content="inteligencia artificial, curiosidades, tecnología, blog, IA, futuro, machine learning">
+  
+    <!-- Open Graph para compartir -->
+    <meta property="og:title" content="{{ page.title | default: site.title }}">
+    <meta property="og:description" content="{{ page.excerpt | strip_html | truncate: 160 | default: site.description }}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:type" content="website">
+  
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  </head>
+  
 <body>
   <header style="text-align:center; padding: 2em 1em; background-color: #e3e9f0;">
     <h1>{{ site.title }}</h1>
