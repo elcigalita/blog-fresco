@@ -1,0 +1,17 @@
+---
+layout: default
+title: Etiquetas
+permalink: /tag/
+---
+
+<h1>Etiquetas</h1>
+<ul>
+  {% assign tags = site.tags | sort %}
+  {% for tag in tags %}
+    <li>
+      <a href="{{ '/tag/' | append: tag[0] | slugify | append: '/' | relative_url }}">
+        {{ tag[0] | capitalize }}
+      </a> ({{ tag[1].size }})
+    </li>
+  {% endfor %}
+</ul>

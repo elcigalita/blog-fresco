@@ -1,0 +1,15 @@
+---
+layout: default
+---
+
+<h1>Etiqueta: {{ page.tag }}</h1>
+
+<ul>
+  {% assign tag_posts = site.tags[page.tag] %}
+  {% for post in tag_posts %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <small>({{ post.date | date: "%d/%m/%Y" }})</small>
+    </li>
+  {% endfor %}
+</ul>
