@@ -19,16 +19,17 @@
 # in the templates via {{ site.myvariable }}.
 
 title: El blog de la IA
-email: contacto@elcigalita.com
-description: >-
-  Un espacio donde exploramos curiosidades y noticias sobre inteligencia artificial.
+description: Un espacio donde exploramos curiosidades y noticias sobre inteligencia artificial.
+author: elcigalita
 url: "https://curiosidadesia.com"
-baseurl: ""   
+image: /assets/images/default-og.jpg
+ 
 
 theme: minima
 plugins:
  # - jekyll-feed
   - jekyll-sitemap
+  - jekyll-seo-tag
 
 markdown: kramdown
 
