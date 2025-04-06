@@ -12,24 +12,40 @@ client = openai.OpenAI(api_key=api_key)
 
 # ===== PERSONALIZACIÓN =====
 tema = "curiosidades sobre inteligencia artificial"
+tema_fallback = "inteligencia artificial"
 categoria_principal = "ia"
 tags = "ia curiosidades tecnologia"
 # ===========================
 
 # Paso 1: Obtener keywords desde Google Trends
-pytrends = TrendReq(hl='es-ES', tz=360)
-kw_list = [tema]
-pytrends.build_payload(kw_list, cat=0, timeframe='now 7-d', geo='', gprop='')
+def obtener_keywords(tema_base):
+    try:
+        pytrends = TrendReq(hl='es-ES', tz=360)
+        pytrends.build_payload([tema_base], cat=0, timeframe='now 7-d', geo='', gprop='')
+        related_queries = pytrends.related_queries()
+        top_related = related_queries.get(tema_base, {}).get('top')
 
-# Obtener queries relacionadas populares
-related_queries = pytrends.related_queries()
-top_related = related_queries.get(tema, {}).get('top', [])
+        if top_related is not None and not top_related.empty:
+            return [fila['query'] for fila in top_related.head(3).to_dict('records')]
+    except Exception as e:
+        print(f"⚠️ Error al obtener keywords para '{tema_base}': {e}")
 
-palabras_clave = []
-if top_related is not None:
-    palabras_clave = [fila['query'] for fila in top_related.head(3).to_dict('records')]
+    return []
 
-keywords_txt = ", ".join(palabras_clave) if palabras_clave else "inteligencia artificial, cómo funciona, ejemplos"
+# Intenta primero con el tema original
+palabras_clave = obtener_keywords(tema)
+
+# Si no hay resultados, intenta con un tema genérico
+if not palabras_clave:
+    print(f"⚠️ No se encontraron keywords para '{tema}', probando con '{tema_fallback}'...")
+    palabras_clave = obtener_keywords(tema_fallback)
+
+# Si aún no hay, usar keywords por defecto
+if not palabras_clave:
+    print("⚠️ No se encontraron keywords. Usando palabras clave por defecto.")
+    palabras_clave = ["inteligencia artificial", "cómo funciona", "ejemplos"]
+
+keywords_txt = ", ".join(palabras_clave)
 
 # Paso 2: Generar título optimizado para SEO
 prompt_titulo = (
