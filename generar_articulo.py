@@ -4,16 +4,14 @@ import os
 import re
 import requests
 import pytz
-import time
 from dotenv import load_dotenv
-from pytrends.request import TrendReq
 
-# Cargar API key de OpenAI
+# ========== CARGA API ==========
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = openai.OpenAI(api_key=api_key)
 
-# ========== CONFIGURACIÓN PERSONAL ==========
+# ========== CONFIGURACIÓN ==========
 tema = "curiosidades sobre inteligencia artificial"
 temas_alternativos = [
     "inteligencia artificial",
@@ -25,22 +23,8 @@ temas_alternativos = [
 ]
 categoria_principal = "ia"
 tags = "ia curiosidades tecnologia"
-# ============================================
 
-def obtener_keywords(tema_base):
-    try:
-
-        time.sleep(10)  # duerme 10 segundos antes de cada petición
-        pytrends = TrendReq(hl='es-ES', tz=360, geo='ES')
-        sugerencias = pytrends.suggestions(keyword=tema_base)
-        if sugerencias:
-            return [s['title'] for s in sugerencias[:3]]
-    except Exception as e:
-        print(f"⚠️ Error al obtener sugerencias para '{tema_base}': {e}")
-    return []
-
-# Buscar keywords de forma progresiva hasta encontrar alguna válida
-# Lista en caché de keywords por tema
+# ========== KEYWORDS EN CACHÉ ==========
 fallback_keywords = {
     "curiosidades sobre inteligencia artificial": ["qué es la inteligencia artificial", "cómo funciona la IA", "ejemplos de IA"],
     "inteligencia artificial": ["aplicaciones de IA", "IA explicada fácil", "ventajas de la inteligencia artificial"],
@@ -51,7 +35,7 @@ fallback_keywords = {
     "redes neuronales": ["red neuronal artificial", "entrenamiento de redes", "casos reales de redes neuronales"]
 }
 
-# Elegir keywords desde la caché, en orden de temas
+# ========== OBTENER KEYWORDS ==========
 palabras_clave = []
 temas_a_probar = [tema] + temas_alternativos
 
@@ -66,15 +50,15 @@ if not palabras_clave:
     print("⚠️ No se encontraron keywords. Usando genéricas.")
     palabras_clave = ["inteligencia artificial", "cómo funciona", "ejemplos"]
 
-
 keywords_txt = ", ".join(palabras_clave)
 
-# ================= GENERAR TÍTULO =================
+# ========== GENERAR TÍTULO VARIADO ==========
 prompt_titulo = (
-    f"Genera un título para un artículo de blog optimizado para SEO sobre {tema}. "
-    f"Usa palabras clave como: {keywords_txt}. "
-    f"Debe responder a una pregunta como 'qué es', 'cómo funciona', etc. "
-    f"Evita listas tipo '5 cosas' o comillas. Hazlo natural y atractivo."
+    f"Genera un título original y optimizado para SEO para un artículo de blog divulgativo sobre {tema}. "
+    f"Usa alguna de estas palabras clave: {keywords_txt}. "
+    f"Evita fórmulas comunes como 'Qué es...' o 'Cómo funciona...'. "
+    f"Inspírate en enfoques creativos, históricos, polémicos, cotidianos o de impacto. "
+    f"Debe ser llamativo, natural, claro y único."
 )
 
 titulo_response = client.chat.completions.create(
@@ -84,12 +68,13 @@ titulo_response = client.chat.completions.create(
 titulo = titulo_response.choices[0].message.content.strip()
 titulo = titulo.replace('"', '').replace("“", "").replace("”", "").strip()
 
-# ================= GENERAR ARTÍCULO =================
+# ========== GENERAR ARTÍCULO VARIADO ==========
 prompt_articulo = (
-    f"Escribe un artículo original de unas 600 palabras sobre {tema}. "
-    f"Incluye los conceptos clave: {keywords_txt}. "
-    f"Evita estructuras repetitivas y listas numeradas. "
-    f"Usa un tono divulgativo, profesional pero cercano. No uses contenido con copyright."
+    f"Escribe un artículo original de unas 600 palabras sobre {tema}, usando estas palabras clave: {keywords_txt}. "
+    f"Evita introducirlo con frases genéricas como 'La inteligencia artificial (IA) es...'. "
+    f"Elige un enfoque distinto: histórico, cotidiano, comparativo, humorístico o de impacto. "
+    f"No uses listas numeradas. El tono debe ser divulgativo, natural y cercano. "
+    f"No uses contenido repetitivo ni con derechos de autor."
 )
 
 contenido_response = client.chat.completions.create(
@@ -98,7 +83,7 @@ contenido_response = client.chat.completions.create(
 )
 contenido = contenido_response.choices[0].message.content.strip()
 
-# ================= FORMATEAR ARCHIVO =================
+# ========== FECHA, SLUG Y ARCHIVO ==========
 zona_horaria = pytz.timezone("Europe/Madrid")
 fecha_actual = datetime.datetime.now(zona_horaria)
 fecha_str = fecha_actual.strftime("%Y-%m-%d")
@@ -106,7 +91,7 @@ hora_str = fecha_actual.strftime("%H:%M:%S %z")
 slug = re.sub(r'[^a-zA-Z0-9\-]', '', titulo.lower().replace(' ', '-'))[:50]
 nombre_archivo = f"_posts/{fecha_str}-{slug}.md"
 
-# ================= DESCARGAR IMAGEN =================
+# ========== DESCARGAR IMAGEN ==========
 imagen_url_remota = f"https://source.unsplash.com/800x400/?{categoria_principal}"
 imagen_local_path = f"assets/images/posts/{fecha_str}-{slug}.jpg"
 imagen_local_url = f"/assets/images/posts/{fecha_str}-{slug}.jpg"
@@ -123,7 +108,7 @@ try:
 except Exception as e:
     print(f"⚠️ Error al descargar imagen: {e}")
 
-# ================= GUARDAR POST =================
+# ========== GUARDAR POST ==========
 front_matter = f"""---
 layout: post
 title: "{titulo}"
@@ -141,4 +126,5 @@ with open(nombre_archivo, "w", encoding="utf-8") as f:
     f.write(front_matter + "\n" + contenido)
 
 print(f"✅ Artículo generado correctamente: {nombre_archivo}")
+
 
