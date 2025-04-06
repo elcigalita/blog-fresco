@@ -2,57 +2,79 @@ import openai
 import datetime
 import os
 import re
+import requests
+import pytz
+import time
 from dotenv import load_dotenv
 from pytrends.request import TrendReq
 
-# Cargar la API key desde .env
+# Cargar API key de OpenAI
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = openai.OpenAI(api_key=api_key)
 
-# ===== PERSONALIZACIÓN =====
+# ========== CONFIGURACIÓN PERSONAL ==========
 tema = "curiosidades sobre inteligencia artificial"
-tema_fallback = "inteligencia artificial"
+temas_alternativos = [
+    "inteligencia artificial",
+    "chatgpt",
+    "machine learning",
+    "automatización",
+    "big data",
+    "redes neuronales"
+]
 categoria_principal = "ia"
 tags = "ia curiosidades tecnologia"
-# ===========================
+# ============================================
 
-# Paso 1: Obtener keywords desde Google Trends
 def obtener_keywords(tema_base):
     try:
-        pytrends = TrendReq(hl='es-ES', tz=360)
-        pytrends.build_payload([tema_base], cat=0, timeframe='now 7-d', geo='', gprop='')
-        related_queries = pytrends.related_queries()
-        top_related = related_queries.get(tema_base, {}).get('top')
 
-        if top_related is not None and not top_related.empty:
-            return [fila['query'] for fila in top_related.head(3).to_dict('records')]
+        time.sleep(10)  # duerme 10 segundos antes de cada petición
+        pytrends = TrendReq(hl='es-ES', tz=360, geo='ES')
+        sugerencias = pytrends.suggestions(keyword=tema_base)
+        if sugerencias:
+            return [s['title'] for s in sugerencias[:3]]
     except Exception as e:
-        print(f"⚠️ Error al obtener keywords para '{tema_base}': {e}")
-
+        print(f"⚠️ Error al obtener sugerencias para '{tema_base}': {e}")
     return []
 
-# Intenta primero con el tema original
-palabras_clave = obtener_keywords(tema)
+# Buscar keywords de forma progresiva hasta encontrar alguna válida
+# Lista en caché de keywords por tema
+fallback_keywords = {
+    "curiosidades sobre inteligencia artificial": ["qué es la inteligencia artificial", "cómo funciona la IA", "ejemplos de IA"],
+    "inteligencia artificial": ["aplicaciones de IA", "IA explicada fácil", "ventajas de la inteligencia artificial"],
+    "chatgpt": ["qué es chatgpt", "cómo usar chatgpt", "ejemplos de prompts"],
+    "machine learning": ["algoritmos de aprendizaje automático", "modelos supervisados", "ML ejemplos"],
+    "automatización": ["automatización con IA", "procesos automáticos", "robots inteligentes"],
+    "big data": ["qué es big data", "análisis de datos masivos", "uso de big data"],
+    "redes neuronales": ["red neuronal artificial", "entrenamiento de redes", "casos reales de redes neuronales"]
+}
 
-# Si no hay resultados, intenta con un tema genérico
-if not palabras_clave:
-    print(f"⚠️ No se encontraron keywords para '{tema}', probando con '{tema_fallback}'...")
-    palabras_clave = obtener_keywords(tema_fallback)
+# Elegir keywords desde la caché, en orden de temas
+palabras_clave = []
+temas_a_probar = [tema] + temas_alternativos
 
-# Si aún no hay, usar keywords por defecto
+for intento in temas_a_probar:
+    print(f"🔍 Buscando keywords para: {intento}")
+    if intento in fallback_keywords:
+        palabras_clave = fallback_keywords[intento]
+        print(f"✅ Keywords cargadas desde caché: {palabras_clave}")
+        break
+
 if not palabras_clave:
-    print("⚠️ No se encontraron keywords. Usando palabras clave por defecto.")
+    print("⚠️ No se encontraron keywords. Usando genéricas.")
     palabras_clave = ["inteligencia artificial", "cómo funciona", "ejemplos"]
+
 
 keywords_txt = ", ".join(palabras_clave)
 
-# Paso 2: Generar título optimizado para SEO
+# ================= GENERAR TÍTULO =================
 prompt_titulo = (
     f"Genera un título para un artículo de blog optimizado para SEO sobre {tema}. "
     f"Usa palabras clave como: {keywords_txt}. "
-    f"El título debe responder a una pregunta como 'qué es', 'cómo funciona', 'ejemplos de', etc. "
-    f"Evita listas tipo '5 cosas' o comillas. Hazlo natural, claro y atractivo."
+    f"Debe responder a una pregunta como 'qué es', 'cómo funciona', etc. "
+    f"Evita listas tipo '5 cosas' o comillas. Hazlo natural y atractivo."
 )
 
 titulo_response = client.chat.completions.create(
@@ -60,13 +82,14 @@ titulo_response = client.chat.completions.create(
     messages=[{"role": "user", "content": prompt_titulo}]
 )
 titulo = titulo_response.choices[0].message.content.strip()
+titulo = titulo.replace('"', '').replace("“", "").replace("”", "").strip()
 
-# Paso 3: Generar artículo original
+# ================= GENERAR ARTÍCULO =================
 prompt_articulo = (
     f"Escribe un artículo original de unas 600 palabras sobre {tema}. "
     f"Incluye los conceptos clave: {keywords_txt}. "
-    f"Evita estructuras repetitivas como listas numeradas. "
-    f"Usa un tono divulgativo, profesional pero cercano. No uses contenido con derechos de autor."
+    f"Evita estructuras repetitivas y listas numeradas. "
+    f"Usa un tono divulgativo, profesional pero cercano. No uses contenido con copyright."
 )
 
 contenido_response = client.chat.completions.create(
@@ -75,32 +98,47 @@ contenido_response = client.chat.completions.create(
 )
 contenido = contenido_response.choices[0].message.content.strip()
 
-# Paso 4: Formatear fecha y slug
-fecha_actual = datetime.datetime.now()
+# ================= FORMATEAR ARCHIVO =================
+zona_horaria = pytz.timezone("Europe/Madrid")
+fecha_actual = datetime.datetime.now(zona_horaria)
 fecha_str = fecha_actual.strftime("%Y-%m-%d")
-hora_str = "12:00:00 +0000"
+hora_str = fecha_actual.strftime("%H:%M:%S %z")
 slug = re.sub(r'[^a-zA-Z0-9\-]', '', titulo.lower().replace(' ', '-'))[:50]
 nombre_archivo = f"_posts/{fecha_str}-{slug}.md"
 
-# Paso 5: URL de imagen sin copyright desde Unsplash
-imagen_url = f"https://source.unsplash.com/800x400/?{categoria_principal}"
+# ================= DESCARGAR IMAGEN =================
+imagen_url_remota = f"https://source.unsplash.com/800x400/?{categoria_principal}"
+imagen_local_path = f"assets/images/posts/{fecha_str}-{slug}.jpg"
+imagen_local_url = f"/assets/images/posts/{fecha_str}-{slug}.jpg"
+os.makedirs("assets/images/posts", exist_ok=True)
 
-# Paso 6: Front matter con metadata y keywords
+try:
+    response = requests.get(imagen_url_remota)
+    if response.status_code == 200:
+        with open(imagen_local_path, "wb") as img_file:
+            img_file.write(response.content)
+        print("✅ Imagen descargada correctamente.")
+    else:
+        print(f"⚠️ Error al descargar imagen: Código {response.status_code}")
+except Exception as e:
+    print(f"⚠️ Error al descargar imagen: {e}")
+
+# ================= GUARDAR POST =================
 front_matter = f"""---
 layout: post
-title:  "{titulo}"
-date:   {fecha_str} {hora_str}
+title: "{titulo}"
+date: {fecha_str} {hora_str}
 categories: {tags}
-image: {imagen_url}
+image: {imagen_local_url}
 keywords: [{keywords_txt}]
 ---
 
-![Imagen relacionada]({imagen_url})
+![Imagen relacionada sobre {categoria_principal}]({imagen_local_url})
 """
 
-# Paso 7: Crear carpeta y guardar el archivo
 os.makedirs("_posts", exist_ok=True)
 with open(nombre_archivo, "w", encoding="utf-8") as f:
     f.write(front_matter + "\n" + contenido)
 
 print(f"✅ Artículo generado correctamente: {nombre_archivo}")
+
