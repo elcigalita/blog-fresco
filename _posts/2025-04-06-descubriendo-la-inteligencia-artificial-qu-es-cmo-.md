@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  ""Descubriendo la Inteligencia Artificial: Qué es, Cómo Funciona y Ejemplos Fascinantes en Nuestra Vida Diaria""
-date:   2025-04-06 12:00:00 +0000
+date:   2025-04-06 00:01:00 +0000
 categories: ia curiosidades tecnologia
 image: https://source.unsplash.com/800x400/?ia
 keywords: [inteligencia artificial, cómo funciona, ejemplos]
