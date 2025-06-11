@@ -4,6 +4,7 @@ import os
 import re
 import requests
 import pytz
+from urllib.parse import quote
 from dotenv import load_dotenv
 
 # ========== CARGA API ==========
@@ -91,22 +92,32 @@ hora_str = fecha_actual.strftime("%H:%M:%S %z")
 slug = re.sub(r'[^a-zA-Z0-9\-]', '', titulo.lower().replace(' ', '-'))[:50]
 nombre_archivo = f"_posts/{fecha_str}-{slug}.md"
 
-# ========== DESCARGAR IMAGEN ==========
-imagen_url_remota = f"https://source.unsplash.com/800x400/?{categoria_principal}"
+# ========== DESCARGAR IMAGEN CON RETRY ==========
+def intentar_descargar_imagen(termino_busqueda, ruta_destino):
+    url = f"https://source.unsplash.com/800x400/?{quote(termino_busqueda)}"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(ruta_destino, "wb") as img_file:
+                img_file.write(response.content)
+            print(f"✅ Imagen descargada correctamente con '{termino_busqueda}'.")
+            return True
+        else:
+            print(f"⚠️ Error al descargar imagen con '{termino_busqueda}': Código {response.status_code}")
+    except Exception as e:
+        print(f"⚠️ Excepción al descargar imagen: {e}")
+    return False
+
 imagen_local_path = f"assets/images/posts/{fecha_str}-{slug}.jpg"
 imagen_local_url = f"/assets/images/posts/{fecha_str}-{slug}.jpg"
 os.makedirs("assets/images/posts", exist_ok=True)
 
-try:
-    response = requests.get(imagen_url_remota)
-    if response.status_code == 200:
-        with open(imagen_local_path, "wb") as img_file:
-            img_file.write(response.content)
-        print("✅ Imagen descargada correctamente.")
-    else:
-        print(f"⚠️ Error al descargar imagen: Código {response.status_code}")
-except Exception as e:
-    print(f"⚠️ Error al descargar imagen: {e}")
+# Intento 1: con primera keyword
+descargada = intentar_descargar_imagen(palabras_clave[0], imagen_local_path)
+
+# Intento 2: con fallback
+if not descargada:
+    intentar_descargar_imagen("inteligencia-artificial", imagen_local_path)
 
 # ========== GUARDAR POST ==========
 front_matter = f"""---
@@ -127,4 +138,12 @@ with open(nombre_archivo, "w", encoding="utf-8") as f:
 
 print(f"✅ Artículo generado correctamente: {nombre_archivo}")
 
-
+# ========== HACER COMMIT Y PUSH ==========
+try:
+    os.system(f'git add "{nombre_archivo}" "{imagen_local_path}"')
+    commit_msg = f'Nuevo artículo del {fecha_str} generado automáticamente'
+    os.system(f'git commit -m "{commit_msg}"')
+    os.system('git push')
+    print("🚀 Cambios subidos automáticamente a GitHub.")
+except Exception as e:
+    print(f"⚠️ Error al hacer commit/push automático: {e}")
