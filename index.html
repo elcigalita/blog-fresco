@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chatbots para negocios locales</title>
+    <meta name="description" content="Chatbots sencillos para locales: reservas, preguntas frecuentes y atención 24/7 sin mensualidades." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root{--max:1080px}
+      *{box-sizing:border-box}
+      body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;line-height:1.6;color:#111}
+      header{padding:18px 20px;border-bottom:1px solid #eee;position:sticky;top:0;background:#fff;backdrop-filter:saturate(140%) blur(6px)}
+      .wrap{max-width:var(--max);margin:0 auto;padding:0 16px}
+      nav{display:flex;align-items:center;gap:18px;justify-content:space-between}
+      nav a{color:#111;text-decoration:none;font-weight:600}
+      .btn{display:inline-block;padding:12px 18px;border-radius:12px;border:1px solid #111;text-decoration:none;font-weight:600}
+      .btn.primary{background:#111;color:#fff;border-color:#111}
+      .hero{padding:64px 0 32px}
+      .hero h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 16px}
+      .hero p{font-size:18px;color:#444;margin:0 0 24px}
+      .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+      .card{border:1px solid #eee;border-radius:16px;padding:18px}
+      .card h3{margin:0 0 8px;font-size:18px}
+      .muted{color:#555}
+      .demo{margin:28px 0;border:1px dashed #ccc;border-radius:16px;padding:16px}
+      footer{border-top:1px solid #eee;margin-top:48px;padding:24px 0;color:#666}
+      code{background:#f6f7f8;border:1px solid #e6e8eb;border-radius:8px;padding:0 6px}
+      .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+      .note{background:#f7f8ff;border:1px solid #e4e7ff;border-radius:14px;padding:14px;color:#223}
+      @media(prefers-color-scheme:dark){
+        body{background:#0b0c10;color:#eef1f4}
+        header,footer{background:#0b0c10;border-color:#1b1e26}
+        .card,.demo{border-color:#1b1e26}
+        .btn{border-color:#eef1f4;color:#eef1f4}
+        .btn.primary{background:#eef1f4;color:#0b0c10;border-color:#eef1f4}
+        .muted{color:#aab2c0}
+        .note{background:#0f1220;border-color:#1a1f3a;color:#cfd7ff}
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <nav>
+          <div><a href="/">Chatbots Locales</a></div>
+          <div style="display:flex;gap:14px">
+            <a class="btn" href="#contacto">Contacto</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <h1>Chatbots para tu negocio local — sin líos ni mensualidades</h1>
+        <p class="muted">Responde preguntas frecuentes, toma datos de contacto y gestiona reservas 24/7. Instalación con un único bloque de código.</p>
+        <div class="cta">
+          <a class="btn primary" href="#contacto">Pedir demo</a>
+          </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <h3>👉 Fácil de instalar</h3>
+          <p>Un <code>&lt;script&gt;</code> que pegas en tu web y listo. Compatible con la mayoría de páginas (WordPress, Wix, HTML estático).</p>
+        </div>
+        <div class="card">
+          <h3>💬 Atención 24/7</h3>
+          <p>Responde al instante preguntas comunes (horarios, reserva, precios) y recolecta datos si necesitas devolver la llamada.</p>
+        </div>
+        <div class="card">
+          <h3>🧾 Sin cuotas fijas</h3>
+          <p>Modelo simple: pago único por instalación y ajustes iniciales. Opcional: soporte bajo demanda.</p>
+        </div>
+        <div class="card">
+          <h3>🛡️ Privado y simple</h3>
+          <p>No requiere cuentas externas ni servidores propios: el widget es ligero y sin rastreadores.</p>
+        </div>
+      </section>
+
+      <section class="demo">
+        <h3 style="margin:0 0 8px">Demo del widget</h3>
+        <p class="muted" style="margin:0 0 12px">Ejemplo embebido: abre el botón en la esquina y conversa.</p>
+        <!-- DEMO DEL CHATBOT: botón flotante minimal que abre un panel -->
+        <div id="chat-launch" class="btn" style="position:relative">Abrir chat</div>
+        <div id="chat-panel" style="display:none;position:fixed;right:16px;bottom:76px;width:340px;max-width:92vw;height:480px;border:1px solid #eee;border-radius:16px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden">
+          <iframe title="Chat demo" srcdoc="
+            <!doctype html>
+            <html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+            <style>html,body{margin:0;height:100%;font:14px system-ui;background:#fff;color:#111}header{padding:10px;border-bottom:1px solid #eee;font-weight:700}main{padding:10px;display:flex;flex-direction:column;height:calc(100% - 42px)}.messages{flex:1;overflow:auto;border:1px solid #eee;border-radius:10px;padding:8px}.input{display:flex;gap:8px;margin-top:8px}input{flex:1;padding:8px;border:1px solid #ddd;border-radius:8px}button{padding:8px 12px;border:1px solid #111;border-radius:10px;background:#111;color:#fff}</style>
+            </head><body>
+              <header>Chat de prueba</header>
+              <main>
+                <div class='messages' id='msgs'>Hola 👋 ¿En qué puedo ayudarte?</div>
+                <div class='input'><input id='i' placeholder='Escribe aquí...'><button onclick='send()'>Enviar</button></div>
+              </main>
+              <script>
+                function send(){const i=document.getElementById('i');const m=document.getElementById('msgs');if(!i.value)return;m.innerHTML+=`<div><b>Tú:</b> ${i.value}</div>`; setTimeout(()=>{m.innerHTML+=`<div><b>Bot:</b> Gracias, te respondemos pronto.</div>`; m.scrollTop=m.scrollHeight;},500); i.value='';}
+              </script>
+            </body></html>
+          " style="border:0;width:100%;height:100%"></iframe>
+        </div>
+        <button id="chat-fab" aria-label="Abrir chat" style="position:fixed;right:16px;bottom:16px;border-radius:999px;padding:14px 18px;border:1px solid #111;background:#111;color:#fff;font-weight:700">Chat</button>
+        <script>
+          (function(){
+            var fab=document.getElementById('chat-fab');
+            var panel=document.getElementById('chat-panel');
+            var launch=document.getElementById('chat-launch');
+            function toggle(){panel.style.display = (panel.style.display==='none'||!panel.style.display)?'block':'none'}
+            fab.addEventListener('click',toggle);
+            launch.addEventListener('click',toggle);
+          })();
+        </script>
+        <p class="note">Este es un ejemplo local. Cuando lo instalemos en tu web, el botón cargará tu chatbot real.</p>
+      </section>
+
+      <section id="contacto" style="margin-top:24px">
+        <h2>Contacto</h2>
+        <p>Cuéntame tu caso y te preparo una demo adaptada a tu negocio.</p>
+        <ul class="muted">
+          <li>Email: <a href="mailto:contacto@tu-dominio.com">contacto@tu-dominio.com</a></li>
+          <li>WhatsApp: <a href="https://wa.me/34999999999">+34 999 99 99 99</a></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        © <span id="y"></span> Chatbots Locales </div>
+    </footer>
+    <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+  </body>
+</html>
